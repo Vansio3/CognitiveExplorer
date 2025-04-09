@@ -51,8 +51,8 @@ const totalBiasesElement = document.getElementById('totalBiases');
 const biasesProgressBar = document.getElementById('biasesProgressBar');
 const streakCountElement = document.getElementById('streakCount');
 const checkInBtn = document.getElementById('checkInBtn');
-const dailyChallengeText = document.getElementById('dailyChallengeText');
-const dailyChallengeBtn = document.getElementById('dailyChallengeBtn');
+const dailyPickText = document.getElementById('dailyPickText');
+const dailyPickBtn = document.getElementById('dailyPickBtn');
 const achievementsContainer = document.getElementById('achievementsSection');
 const exploreBtn = document.getElementById('exploreBtn');
 const challengeBtn = document.getElementById('challengeBtn');
@@ -239,34 +239,58 @@ function updateUI() {
     totalBiasesElement.textContent = totalBiasesCount; // Use the constant calculated from data
     biasesProgressBar.style.width = `${Math.min(100, (gameState.biasesExplored.length / totalBiasesCount) * 100)}%`;
     streakCountElement.textContent = gameState.streakDays;
+    // Update sticky header
+    document.getElementById('userLevelSticky').textContent = gameState.level;
+    document.getElementById('userPointsSticky').textContent = gameState.points.toLocaleString();
+    document.getElementById('currentXPSticky').textContent = gameState.xp.toLocaleString();
+    document.getElementById('requiredXPSticky').textContent = gameState.xpRequired.toLocaleString();
+    document.getElementById('levelProgressBarSticky').style.width = `${Math.min(100, (gameState.xp / gameState.xpRequired) * 100)}%`;
+    document.getElementById('biasesExploredSticky').textContent = gameState.biasesExplored.length;
+    document.getElementById('totalBiasesSticky').textContent = totalBiasesCount;
+    document.getElementById('biasesProgressBarSticky').style.width = `${Math.min(100, (gameState.biasesExplored.length / totalBiasesCount) * 100)}%`;
     updateCheckInButton();
     updateDailyChallenge();
     updateAchievementProgress();
     updateLeaderboardUserRow();
 }
 
+function setupStickyHeader() {
+    const stickyHeader = document.getElementById('stickyHeader');
+    let lastScrollY = window.scrollY;
+    const showThreshold = 200; // Show header after scrolling this many pixels
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > showThreshold) {
+            stickyHeader.classList.add('visible');
+        } else {
+            stickyHeader.classList.remove('visible');
+        }
+        lastScrollY = window.scrollY;
+    });
+}
+
 function updateCheckInButton() {
     const today = getTodayDateString();
     const isChecked = gameState.lastCheckIn === today;
     if (checkInBtn) {
-         checkInBtn.textContent = isChecked ? 'Checked In Today!' : 'Check In Today';
-         checkInBtn.disabled = isChecked;
+        checkInBtn.textContent = isChecked ? 'Checked In Today!' : 'Check In Today';
+        checkInBtn.disabled = isChecked;
     } else {
-         console.error("Could not find checkInBtn element in updateCheckInButton");
+        console.error("Could not find checkInBtn element in updateCheckInButton");
     }
 }
 
 function updateDailyChallenge() {
     if (!gameState.dailyChallengeBias) setDailyChallengeBias(); // Ensure one is set
     const bias = biases.find(b => b.name === gameState.dailyChallengeBias);
-    dailyChallengeText.textContent = bias ? `Learn about "${bias.name}"!` : `Explore a new bias today!`;
+    dailyPickText.textContent = bias ? `Learn about "${bias.name}"!` : `Explore a new bias today!`;
     // Optionally disable button if the challenge bias is locked
-    dailyChallengeBtn.disabled = bias ? bias.requiredLevel > gameState.level : true;
-    if (dailyChallengeBtn.disabled) {
-         dailyChallengeText.textContent += ` (Requires Lvl ${bias?.requiredLevel})`;
-         dailyChallengeBtn.title = `Requires Level ${bias?.requiredLevel} to start`;
+    dailyPickBtn.disabled = bias ? bias.requiredLevel > gameState.level : true;
+    if (dailyPickBtn.disabled) {
+        dailyPickText.textContent += ` (Requires Lvl ${bias?.requiredLevel})`;
+        dailyPickBtn.title = `Requires Level ${bias?.requiredLevel} to start`;
     } else {
-         dailyChallengeBtn.title = '';
+        dailyPickBtn.title = '';
     }
 }
 
@@ -289,7 +313,7 @@ function updateAchievementProgress() {
         const isUnlocked = (gameState.achievements && gameState.achievements[key] === true) || false;
 
         // Calculate current progress based on achievement type
-         if (achievement.category) {
+        if (achievement.category) {
             const categoryBiases = biases.filter(b => b.category === achievement.category);
             const unlockedInCategory = categoryBiases.filter(b => b.requiredLevel <= gameState.level);
             const exploredUnlockedInCategory = unlockedInCategory.filter(b => gameState.biasesExplored.includes(b.name)).length;
@@ -297,7 +321,7 @@ function updateAchievementProgress() {
             // But display progress based on *explorable* items
             textElement.textContent = `${exploredUnlockedInCategory}/${achievement.requiredCount} biases`;
             currentCount = exploredUnlockedInCategory; // Use this for checking unlock condition below
-         } else if (key === 'quiz-master') {
+        } else if (key === 'quiz-master') {
             currentCount = gameState.quizzesCompleted;
             textElement.textContent = `${currentCount}/${achievement.requiredCount} quizzes`;
         } else if (key === 'journal-keeper') {
@@ -371,11 +395,11 @@ function createBiasCard(bias) {
     let readMoreButtonHTML = '';
 
     if (isUnlocked) {
-         readMoreButtonHTML = `
+        readMoreButtonHTML = `
             <button class="read-more-btn text-indigo-600 hover:text-indigo-800 text-xs font-medium py-1 transition duration-200" data-bias-id="${bias.id}">
                 Read More <i class="fas fa-info-circle text-xs ml-1"></i>
             </button>`;
-         exploreStatusHTML = !isExplored
+        exploreStatusHTML = !isExplored
             ? `<button class="explore-bias-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium py-1 px-2.5 rounded-full text-xs transition duration-200" data-bias="${bias.name}"><i class="fas fa-check mr-1"></i> Mark Explored</button>`
             : `<span class="inline-flex items-center bg-green-100 text-green-700 font-medium py-1 px-2.5 rounded-full text-xs"><i class="fas fa-check-circle mr-1"></i> Explored</span>`;
     } else {
@@ -384,7 +408,7 @@ function createBiasCard(bias) {
             <button class="read-more-btn text-gray-400 text-xs font-medium py-1 transition duration-200 disabled" disabled data-bias-id="${bias.id}" title="Requires Level ${bias.requiredLevel}">
                 Read More <i class="fas fa-lock text-xs ml-1"></i>
             </button>`;
-         exploreStatusHTML = `<span class="inline-flex items-center bg-gray-100 text-gray-500 font-medium py-1 px-2.5 rounded-full text-xs" title="Requires Level ${bias.requiredLevel}"><i class="fas fa-lock mr-1"></i> Locked</span>`;
+        exploreStatusHTML = `<span class="inline-flex items-center bg-gray-100 text-gray-500 font-medium py-1 px-2.5 rounded-full text-xs" title="Requires Level ${bias.requiredLevel}"><i class="fas fa-lock mr-1"></i> Locked</span>`;
     }
     // --- End button logic ---
 
@@ -436,16 +460,16 @@ function createBiasCard(bias) {
             });
         }
     } else {
-         // Existing logic for locked card feedback (optional)
-         card.addEventListener('click', (e) => {
-               if (e.target !== card && e.target !== card.querySelector(':scope > div')) return;
-               console.log(`Bias "${bias.name}" requires Level ${bias.requiredLevel}`);
-               const indicator = card.querySelector('.locked-indicator');
-               if (indicator) {
-                    indicator.classList.add('animate-pulse');
-                    setTimeout(() => indicator.classList.remove('animate-pulse'), 1000);
-               }
-         });
+        // Existing logic for locked card feedback (optional)
+        card.addEventListener('click', (e) => {
+            if (e.target !== card && e.target !== card.querySelector(':scope > div')) return;
+            console.log(`Bias "${bias.name}" requires Level ${bias.requiredLevel}`);
+            const indicator = card.querySelector('.locked-indicator');
+            if (indicator) {
+                indicator.classList.add('animate-pulse');
+                setTimeout(() => indicator.classList.remove('animate-pulse'), 1000);
+            }
+        });
     }
 
     return card;
@@ -454,7 +478,7 @@ function createBiasCard(bias) {
 
 function createFeaturedBiasCard(bias) {
     const isExplored = gameState.biasesExplored.includes(bias.name);
-     // Featured bias assumes it's unlocked because it was selected by showRandomBias (which filters)
+    // Featured bias assumes it's unlocked because it was selected by showRandomBias (which filters)
     const longDescContent = bias.longDescription || "More details coming soon.";
 
     return `
@@ -480,7 +504,7 @@ function createFeaturedBiasCard(bias) {
             </div>
             <div class="mt-5 flex justify-center explore-status">
                 ${!isExplored ? `<button id="exploreFeaturedBiasBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-5 rounded-lg transition duration-200 text-sm" data-bias="${bias.name}"><i class="fas fa-check mr-2"></i> Mark as Explored</button>`
-                            : `<span class="inline-flex items-center bg-green-100 text-green-700 font-medium py-2 px-5 rounded-lg text-sm"><i class="fas fa-check-circle mr-2"></i> Explored</span>`}
+            : `<span class="inline-flex items-center bg-green-100 text-green-700 font-medium py-2 px-5 rounded-lg text-sm"><i class="fas fa-check-circle mr-2"></i> Explored</span>`}
             </div>
         </div>`;
 }
@@ -535,20 +559,20 @@ function renderBiases() {
     noResultsMessage.classList.toggle('hidden', visibleCount > 0);
 
     if (visibleCount === 0) {
-         // Determine the reason for no results
-         const anyUnlockedBiasesExist = biases.some(b => b.requiredLevel <= gameState.level);
-         if (!anyUnlockedBiasesExist && gameState.level === 1) {
-              noResultsMessage.innerHTML = `
+        // Determine the reason for no results
+        const anyUnlockedBiasesExist = biases.some(b => b.requiredLevel <= gameState.level);
+        if (!anyUnlockedBiasesExist && gameState.level === 1) {
+            noResultsMessage.innerHTML = `
                   <i class="fas fa-rocket text-4xl text-gray-400 mb-4"></i>
                   <h3 class="text-xl font-semibold text-gray-600">Welcome, Explorer!</h3>
                   <p class="text-gray-500 mt-2">Your journey begins. Level up to unlock your first biases!</p>`;
-         } else {
-             // Default message if filters/search match nothing
-              noResultsMessage.innerHTML = `
+        } else {
+            // Default message if filters/search match nothing
+            noResultsMessage.innerHTML = `
                   <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
                   <h3 class="text-xl font-semibold text-gray-600">No biases found</h3>
                   <p class="text-gray-500 mt-2">Try adjusting your search or filters.</p>`;
-         }
+        }
     }
     // --- End No Results Logic ---
 
@@ -604,26 +628,26 @@ function attachFeaturedBiasListeners(bias) {
     document.getElementById('backToAllBtn')?.addEventListener('click', () => {
         featuredBiasSection.classList.add('hidden');
         biasesGrid.classList.remove('hidden');
-         // Optionally re-render grid to ensure lock status is correct if level changed while viewing featured
-         renderBiases();
+        // Optionally re-render grid to ensure lock status is correct if level changed while viewing featured
+        renderBiases();
     });
-     // Target the container div now
+    // Target the container div now
     const exploreBtnContainer = document.querySelector('#featuredBias .explore-status');
     const exploreBtn = exploreBtnContainer?.querySelector('#exploreFeaturedBiasBtn');
 
     if (exploreBtn) {
-         exploreBtn.addEventListener('click', (e) => exploreBias(bias.name, exploreBtnContainer, true));
+        exploreBtn.addEventListener('click', (e) => exploreBias(bias.name, exploreBtnContainer, true));
     }
 }
 
 function exploreBias(biasName, statusContainerElement = null, isFeatured = false) {
     const bias = biases.find(b => b.name === biasName);
-     // Add check: Can only explore if bias is unlocked
-     if (!bias || bias.requiredLevel > gameState.level) {
-          console.warn(`Attempted to explore locked bias: ${biasName}`);
-          // Optionally provide user feedback, e.g., flashing the lock icon
-          return;
-     }
+    // Add check: Can only explore if bias is unlocked
+    if (!bias || bias.requiredLevel > gameState.level) {
+        console.warn(`Attempted to explore locked bias: ${biasName}`);
+        // Optionally provide user feedback, e.g., flashing the lock icon
+        return;
+    }
 
     if (gameState.biasesExplored.includes(biasName)) {
         return; // Already explored
@@ -686,8 +710,8 @@ function addXP(xp) {
     // If no level up happened in this call, we still need to update UI and save
     // for the simple XP gain.
     if (!leveledUpInThisCall) {
-         updateUI(); // Update UI for XP gain without level up
-         saveGameState(); // Save state if only XP was gained
+        updateUI(); // Update UI for XP gain without level up
+        saveGameState(); // Save state if only XP was gained
     }
     // If leveledUpInThisCall is true, levelUp() already handled UI updates and saving.
 }
@@ -740,13 +764,13 @@ function setDailyChallengeBias() {
     // Filter for biases accessible at the current level
     const availableBiases = biases.filter(b => b.requiredLevel <= gameState.level);
     if (availableBiases.length === 0) {
-         // Handle case where no biases are unlocked yet - pick a Level 1 bias
-         const levelOneBiases = biases.filter(b => b.requiredLevel === 1);
-         gameState.dailyChallengeBias = levelOneBiases.length > 0
-             ? levelOneBiases[Math.floor(Math.random() * levelOneBiases.length)].name
-             : (biases.length > 0 ? biases[0].name : null); // Absolute fallback
-         console.log("No available biases for level, setting Level 1 challenge:", gameState.dailyChallengeBias);
-         return;
+        // Handle case where no biases are unlocked yet - pick a Level 1 bias
+        const levelOneBiases = biases.filter(b => b.requiredLevel === 1);
+        gameState.dailyChallengeBias = levelOneBiases.length > 0
+            ? levelOneBiases[Math.floor(Math.random() * levelOneBiases.length)].name
+            : (biases.length > 0 ? biases[0].name : null); // Absolute fallback
+        console.log("No available biases for level, setting Level 1 challenge:", gameState.dailyChallengeBias);
+        return;
     }
 
     const unexploredAvailable = availableBiases.filter(b => !gameState.biasesExplored.includes(b.name));
@@ -758,7 +782,7 @@ function setDailyChallengeBias() {
 }
 
 
-function startDailyChallenge() {
+function startDailyPick() {
     const bias = biases.find(b => b.name === gameState.dailyChallengeBias);
     if (bias && bias.requiredLevel <= gameState.level) { // Check level again just in case
         switchTab('explore');
@@ -768,10 +792,10 @@ function startDailyChallenge() {
         attachFeaturedBiasListeners(bias);
         window.scrollTo({ top: featuredBiasSection.offsetTop - 20, behavior: 'smooth' });
     } else if (bias) {
-         alert(`This challenge bias (${bias.name}) requires Level ${bias.requiredLevel}. Keep playing to unlock it!`);
+        alert(`This challenge bias (${bias.name}) requires Level ${bias.requiredLevel}. Keep playing to unlock it!`);
     } else {
-         console.warn("Daily challenge bias not found:", gameState.dailyChallengeBias);
-         showRandomBias(); // Fallback to random unlocked bias
+        console.warn("Daily challenge bias not found:", gameState.dailyChallengeBias);
+        showRandomBias(); // Fallback to random unlocked bias
     }
 }
 
@@ -810,11 +834,11 @@ function showAchievementModal(achievementKey) {
 let currentQuizState = null;
 
 function startQuiz() {
-     const unlockedBiasesForQuiz = biases.filter(b => b.requiredLevel <= gameState.level);
-     if (unlockedBiasesForQuiz.length < 4) { // Need at least 4 biases for decent quiz options
-          alert(`You need to unlock more biases (reach higher levels) to take quizzes! Explore some biases first.`);
-          return;
-     }
+    const unlockedBiasesForQuiz = biases.filter(b => b.requiredLevel <= gameState.level);
+    if (unlockedBiasesForQuiz.length < 4) { // Need at least 4 biases for decent quiz options
+        alert(`You need to unlock more biases (reach higher levels) to take quizzes! Explore some biases first.`);
+        return;
+    }
 
     currentQuizState = { scenarios: getRandomQuizScenarios(5), currentScenarioIndex: 0, correctAnswers: 0, userSelection: null };
     quizComplete.classList.add('hidden');
@@ -824,29 +848,29 @@ function startQuiz() {
 }
 
 function getRandomQuizScenarios(count) {
-     // Filter scenarios based on whether the *correct* bias is unlocked
-     const availableScenarios = quizScenarios.filter(scenario => {
-          const correctBias = getBiasDetails(scenario.correctBias);
-          return correctBias && correctBias.requiredLevel <= gameState.level;
-     });
+    // Filter scenarios based on whether the *correct* bias is unlocked
+    const availableScenarios = quizScenarios.filter(scenario => {
+        const correctBias = getBiasDetails(scenario.correctBias);
+        return correctBias && correctBias.requiredLevel <= gameState.level;
+    });
 
-     if (availableScenarios.length === 0) {
-         console.error("No available quiz scenarios for the current level!");
-         // Handle this case - maybe show a message or prevent quiz start?
-         alert("Error: No quiz questions available for your current level.");
-         return []; // Return empty array
-     }
+    if (availableScenarios.length === 0) {
+        console.error("No available quiz scenarios for the current level!");
+        // Handle this case - maybe show a message or prevent quiz start?
+        alert("Error: No quiz questions available for your current level.");
+        return []; // Return empty array
+    }
 
-     // Shuffle and take 'count', ensuring we don't request more than available
-     return [...availableScenarios].sort(() => 0.5 - Math.random()).slice(0, Math.min(count, availableScenarios.length));
+    // Shuffle and take 'count', ensuring we don't request more than available
+    return [...availableScenarios].sort(() => 0.5 - Math.random()).slice(0, Math.min(count, availableScenarios.length));
 }
 
 
 function displayQuizQuestion() {
     if (!currentQuizState || currentQuizState.scenarios.length === 0 || currentQuizState.currentScenarioIndex >= currentQuizState.scenarios.length) {
         console.error("Quiz state invalid or no scenarios loaded.");
-         // Maybe end the quiz prematurely or show an error
-         closeModal(quizModal); // Close the modal if something went wrong
+        // Maybe end the quiz prematurely or show an error
+        closeModal(quizModal); // Close the modal if something went wrong
         return;
     }
     const currentScenario = currentQuizState.scenarios[currentQuizState.currentScenarioIndex];
@@ -857,22 +881,22 @@ function displayQuizQuestion() {
     submitQuizBtn.classList.remove('hidden'); submitQuizBtn.disabled = true;
     quizOptionsContainer.innerHTML = '';
 
-     // Ensure options are also from unlocked biases (or the correct bias itself)
-     const unlockedBiases = biases.filter(b => b.requiredLevel <= gameState.level);
-     const unlockedBiasIds = unlockedBiases.map(b => b.id);
+    // Ensure options are also from unlocked biases (or the correct bias itself)
+    const unlockedBiases = biases.filter(b => b.requiredLevel <= gameState.level);
+    const unlockedBiasIds = unlockedBiases.map(b => b.id);
 
-     // Filter the provided options to only include unlocked ones, ALWAYS including the correct answer even if somehow locked (edge case)
-     let validOptionIds = currentScenario.options.filter(id => unlockedBiasIds.includes(id) || id === currentScenario.correctBias);
+    // Filter the provided options to only include unlocked ones, ALWAYS including the correct answer even if somehow locked (edge case)
+    let validOptionIds = currentScenario.options.filter(id => unlockedBiasIds.includes(id) || id === currentScenario.correctBias);
 
-     // Ensure we have 4 options. If not, add random unlocked biases (excluding correct and already selected)
-     const neededOptions = 4 - validOptionIds.length;
-     if (neededOptions > 0) {
-         const otherUnlockedIds = unlockedBiasIds.filter(id => !validOptionIds.includes(id));
-         const shuffledOthers = [...otherUnlockedIds].sort(() => 0.5 - Math.random());
-         validOptionIds.push(...shuffledOthers.slice(0, neededOptions));
-     }
-      // Final shuffle of the options presented
-     const optionBiasIds = [...validOptionIds].sort(() => 0.5 - Math.random()).slice(0, 4); // Ensure max 4
+    // Ensure we have 4 options. If not, add random unlocked biases (excluding correct and already selected)
+    const neededOptions = 4 - validOptionIds.length;
+    if (neededOptions > 0) {
+        const otherUnlockedIds = unlockedBiasIds.filter(id => !validOptionIds.includes(id));
+        const shuffledOthers = [...otherUnlockedIds].sort(() => 0.5 - Math.random());
+        validOptionIds.push(...shuffledOthers.slice(0, neededOptions));
+    }
+    // Final shuffle of the options presented
+    const optionBiasIds = [...validOptionIds].sort(() => 0.5 - Math.random()).slice(0, 4); // Ensure max 4
 
     optionBiasIds.forEach(biasId => {
         const bias = getBiasDetails(biasId);
@@ -924,22 +948,22 @@ function submitQuizAnswer() {
         actualBiasName.textContent = correctBiasDetails?.name || 'the correct bias';
         wrongExplanation.textContent = currentScenario.explanation;
         document.querySelector(`.quiz-option[data-value="${currentQuizState.userSelection}"]`)?.classList.add('bg-red-100', '!border-red-500');
-         // Ensure correct answer is still highlighted green
-         const correctOptionElement = document.querySelector(`.quiz-option[data-value="${currentScenario.correctBias}"]`);
-         if (correctOptionElement) {
-              correctOptionElement.classList.remove('bg-red-100', '!border-red-500'); // Remove wrong styling if it was somehow applied
-              correctOptionElement.classList.add('bg-green-100', '!border-green-500');
-         }
+        // Ensure correct answer is still highlighted green
+        const correctOptionElement = document.querySelector(`.quiz-option[data-value="${currentScenario.correctBias}"]`);
+        if (correctOptionElement) {
+            correctOptionElement.classList.remove('bg-red-100', '!border-red-500'); // Remove wrong styling if it was somehow applied
+            correctOptionElement.classList.add('bg-green-100', '!border-green-500');
+        }
     }
     const isLast = currentQuizState.currentScenarioIndex >= currentQuizState.scenarios.length - 1;
     nextQuizBtn.classList.toggle('hidden', isLast); endQuizBtn.classList.toggle('hidden', !isLast);
 }
 
 function nextQuizQuestion() {
-     if (!currentQuizState || currentQuizState.currentScenarioIndex >= currentQuizState.scenarios.length - 1) {
-          completeQuiz(); // Go to completion screen if it was the last question
-          return;
-     }
+    if (!currentQuizState || currentQuizState.currentScenarioIndex >= currentQuizState.scenarios.length - 1) {
+        completeQuiz(); // Go to completion screen if it was the last question
+        return;
+    }
     currentQuizState.currentScenarioIndex++;
     document.querySelectorAll('.quiz-option').forEach(el => el.style.pointerEvents = 'auto');
     displayQuizQuestion();
@@ -947,34 +971,34 @@ function nextQuizQuestion() {
 
 function completeQuiz() {
     if (!currentQuizState) return; // Prevent errors if called inappropriately
-     // Ensure quiz content is hidden and complete screen is shown
-     quizContent.classList.add('hidden');
-     quizComplete.classList.remove('hidden');
+    // Ensure quiz content is hidden and complete screen is shown
+    quizContent.classList.add('hidden');
+    quizComplete.classList.remove('hidden');
 
     correctCount.textContent = currentQuizState.correctAnswers;
-     totalCount.textContent = currentQuizState.scenarios.length > 0 ? currentQuizState.scenarios.length : '?'; // Handle case where scenarios might be empty
+    totalCount.textContent = currentQuizState.scenarios.length > 0 ? currentQuizState.scenarios.length : '?'; // Handle case where scenarios might be empty
 
 
     // Award points only if there were scenarios
     let points = 0;
     let xp = 0;
     if (currentQuizState.scenarios.length > 0) {
-         points = currentQuizState.correctAnswers * 15 + 50; // Base points + per correct
-         xp = currentQuizState.correctAnswers * 5 + 10; // Base XP + per correct
-         pointsEarned.textContent = points.toLocaleString();
-         xpEarned.textContent = xp.toLocaleString();
+        points = currentQuizState.correctAnswers * 15 + 50; // Base points + per correct
+        xp = currentQuizState.correctAnswers * 5 + 10; // Base XP + per correct
+        pointsEarned.textContent = points.toLocaleString();
+        xpEarned.textContent = xp.toLocaleString();
 
-         addPoints(points);
-         addXP(xp);
-         showPointsAnimation(points, quizModal.querySelector('.modal-content'));
+        addPoints(points);
+        addXP(xp);
+        showPointsAnimation(points, quizModal.querySelector('.modal-content'));
 
-         gameState.quizzesCompleted++;
+        gameState.quizzesCompleted++;
     } else {
-         // No points/XP if quiz had no questions
-         pointsEarned.textContent = "0";
-         xpEarned.textContent = "0";
-         // Optionally adjust the completion message
-         quizComplete.querySelector('p').innerHTML = "Quiz finished. No questions were available for your level.";
+        // No points/XP if quiz had no questions
+        pointsEarned.textContent = "0";
+        xpEarned.textContent = "0";
+        // Optionally adjust the completion message
+        quizComplete.querySelector('p').innerHTML = "Quiz finished. No questions were available for your level.";
     }
 
 
@@ -1003,22 +1027,22 @@ function populateJournalBiasOptions() {
         });
 }
 function openJournalModal() {
-     populateJournalBiasOptions(); // Refresh options when opening
-     journalTitleInput.value = '';
-     journalBiasSelect.value = '';
-     journalContentInput.value = '';
-     openModal(journalModal);
- }
+    populateJournalBiasOptions(); // Refresh options when opening
+    journalTitleInput.value = '';
+    journalBiasSelect.value = '';
+    journalContentInput.value = '';
+    openModal(journalModal);
+}
 function addJournalEntry() {
     const title = journalTitleInput.value.trim();
     const content = journalContentInput.value.trim();
     if (!title || !content) {
-         alert("Please provide a title and description.");
-         return;
+        alert("Please provide a title and description.");
+        return;
     }
 
     const newEntry = {
-         id: Date.now().toString(), title, biasName: journalBiasSelect.value, content, date: new Date().toISOString()
+        id: Date.now().toString(), title, biasName: journalBiasSelect.value, content, date: new Date().toISOString()
     };
     gameState.journalEntries.unshift(newEntry);
 
@@ -1043,8 +1067,8 @@ function renderJournalEntries() {
         entryElement.className = 'journal-entry bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-fadeIn';
         const date = new Date(entry.date); const formattedDate = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
         const bias = biases.find(b => b.name === entry.biasName);
-         // Determine category, default to unknown, handle if bias definition changed/removed
-         const category = bias ? bias.category : 'unknown';
+        // Determine category, default to unknown, handle if bias definition changed/removed
+        const category = bias ? bias.category : 'unknown';
         const biasTag = entry.biasName ? `<span class="badge-${category} text-xs font-bold px-2 py-0.5 rounded-full uppercase inline-block mr-2 mb-2">${entry.biasName}</span>` : '';
         entryElement.innerHTML = `
             <div class="flex justify-between items-start mb-1.5"><h4 class="text-base font-semibold text-gray-800 mr-2">${entry.title}</h4><span class="text-xs text-gray-500 flex-shrink-0">${formattedDate}</span></div>
@@ -1090,12 +1114,12 @@ function openBiasDetailModal(biasId) {
         return;
     }
     // Check if bias is unlocked before opening modal
-     if (bias.requiredLevel > gameState.level) {
-         console.log(`Bias "${bias.name}" (ID: ${biasId}) requires Level ${bias.requiredLevel}. Cannot open details.`);
-         // Optionally show a small message near the clicked button
-         alert(`Requires Level ${bias.requiredLevel} to view details.`);
-         return;
-     }
+    if (bias.requiredLevel > gameState.level) {
+        console.log(`Bias "${bias.name}" (ID: ${biasId}) requires Level ${bias.requiredLevel}. Cannot open details.`);
+        // Optionally show a small message near the clicked button
+        alert(`Requires Level ${bias.requiredLevel} to view details.`);
+        return;
+    }
 
 
     currentBiasInModal = bias; // Store the current bias object
@@ -1161,8 +1185,8 @@ function showConfetti() {
 
 
 // --- Event Listeners Setup ---
-        // --- Event Listeners Setup ---
-        function setupEventListeners() {
+// --- Event Listeners Setup ---
+function setupEventListeners() {
     // Filters - This should now correctly include the new button
     const allFilterButtons = document.querySelectorAll('.filter-buttons .filter-button'); // Ensure selection is broad enough
     allFilterButtons.forEach(button => button.addEventListener('click', () => {
@@ -1188,14 +1212,14 @@ function showConfetti() {
 
     // Daily
     checkInBtn?.addEventListener('click', handleCheckIn); // Added optional chaining
-    dailyChallengeBtn?.addEventListener('click', startDailyChallenge); // Added optional chaining
+    dailyPickBtn?.addEventListener('click', startDailyPick); // Added optional chaining
 
     // Tabs (Main desktop tabs)
     tabButtons.forEach(button => button?.addEventListener('click', () => switchTab(button.id.replace('Btn', '')))); // Added optional chaining
 
     // Actions
-     startQuizBtn?.addEventListener('click', startQuiz); // Added optional chaining
-     scenarioBtn?.addEventListener('click', startScenario); // Added optional chaining
+    startQuizBtn?.addEventListener('click', startQuiz); // Added optional chaining
+    scenarioBtn?.addEventListener('click', startScenario); // Added optional chaining
     addJournalEntryBtn?.addEventListener('click', openJournalModal); // Added optional chaining
     resetProgressBtn?.addEventListener('click', resetGameState); // Added optional chaining
 
@@ -1221,8 +1245,8 @@ function showConfetti() {
         menuOverlay?.classList.remove('menu-open');
         // Add a slight delay before hiding overlay and showing button to allow transition
         setTimeout(() => {
-             menuOverlay?.classList.add('hidden');
-             burgerBtn?.classList.remove('hidden'); // Show burger icon after menu is closed
+            menuOverlay?.classList.add('hidden');
+            burgerBtn?.classList.remove('hidden'); // Show burger icon after menu is closed
         }, 300);
     };
 
@@ -1232,6 +1256,33 @@ function showConfetti() {
     });
     closeNavBtn?.addEventListener('click', closeMenu);
     menuOverlay?.addEventListener('click', closeMenu);
+
+    // Add document click handler
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('mobileNav');
+        const burgerButton = document.getElementById('burgerBtn');
+
+        // Check if menu is open and click is outside menu and not on burger button
+        if (menu?.classList.contains('menu-open') &&
+            !menu.contains(e.target) &&
+            e.target !== burgerButton) {
+            closeMenu();
+        }
+    });
+
+    // Update burger button click handler to stop propagation
+    burgerBtn?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent document click from immediately closing the menu
+        openMenu();
+    });
+
+    // Also stop propagation on menu clicks to prevent closing
+    mobileNav?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent clicks inside menu from closing it
+    });
+
+    // Keep existing close button handler
+    closeNavBtn?.addEventListener('click', closeMenu);
 
     // Mobile Nav Links
     navLinks.forEach(link => {
@@ -1304,7 +1355,7 @@ function initializeGame() {
     loadGameState(); // Load or set default gameState
 
     const today = getTodayDateString();
-     // Set daily challenge only if needed AND biases exist
+    // Set daily challenge only if needed AND biases exist
     if ((gameState.lastCheckIn !== today || !gameState.dailyChallengeBias) && typeof biases !== 'undefined' && biases.length > 0) { // Check if biases is defined
         setDailyChallengeBias();
         saveGameState(); // Save the potentially updated challenge bias
@@ -1321,6 +1372,7 @@ function initializeGame() {
     setupEventListeners();
     updateUI(); // Set initial UI based on loaded/default state
     switchTab('explore'); // Start on explore tab
+    setupStickyHeader();
 
     console.log("Game Initialized. Current Level:", gameState.level);
 }

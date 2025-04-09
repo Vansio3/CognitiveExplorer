@@ -2,6 +2,47 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
     color: #333;
+    padding-top: 60px; /* Adjust based on header height */
+}
+
+/* Sticky Header Styles */
+#stickyHeader {
+    transform: translateY(-100%); /* Start hidden */
+    opacity: 0;
+}
+
+#stickyHeader.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Sticky Header Container Adjustments */
+#stickyHeader .container {
+    position: relative;
+    max-width: calc(100% - 4rem); /* Leave space for burger menu */
+}
+
+/* Ensure progress bars stay within bounds */
+#stickyHeader .max-w-md {
+    max-width: min(350px, 100%); /* Adjust the 350px value as needed */
+}
+
+/* Responsive header adjustments */
+@media (max-width: 768px) {
+    /* Hide only the points container on mobile */
+    #stickyHeader .flex.items-center.space-x-4 > div:nth-child(2) {
+        display: none;
+    }
+
+    /* Keep spacing for remaining elements */
+    #stickyHeader .flex.items-center.space-x-4 {
+        gap: 0.5rem;
+    }
+
+    /* Allow progress bars to use available space */
+    #stickyHeader .flex-1.max-w-md {
+        max-width: 45%; /* Adjust this value to fit your needs */
+    }
 }
 
 .bias-card {
