@@ -208,20 +208,29 @@ canvas#confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z
 }
 
 /* --- Theme Toggle Switch (Used in Mobile Nav) --- */
-.theme-toggle-checkbox:checked {
-    right: 0;
-    border-color: #4F46E5; /* Indigo */
-}
-.theme-toggle-checkbox:checked + .theme-toggle-label {
-    background-color: #4F46E5; /* Indigo */
-}
 .theme-toggle-checkbox {
-    top: -0.25rem; /* Adjust vertical alignment */
-    left: -0.25rem;
-    transition: all 0.1s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transition: transform 0.2s;
+    margin: 0;
 }
+
+.theme-toggle-checkbox:checked {
+    transform: translateX(16px); /* Adjust this value based on your toggle width */
+}
+
 .theme-toggle-label {
-    transition: background-color 0.2s ease;
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #E5E7EB;
+    transition: background-color 0.2s;
+}
+
+.theme-toggle-checkbox:checked + .theme-toggle-label {
+    background-color: #818CF8;
 }
 
 /* --- Dark Theme --- */
