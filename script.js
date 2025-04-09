@@ -81,16 +81,9 @@ const resetProgressBtn = document.getElementById('resetProgressBtn');
 const tabButtons = [exploreBtn, challengeBtn, journalBtn, leaderboardBtn];
 const tabContents = [exploreContent, challengeContent, journalContent, leaderboardContent];
 const confettiCanvas = document.getElementById('confetti');
-// Burger Menu Elements
-const burgerBtn = document.getElementById('burgerBtn');
-const mobileNav = document.getElementById('mobileNav');
-const closeNavBtn = document.getElementById('closeNavBtn');
-const navLinks = mobileNav.querySelectorAll('.nav-link');
-const themeToggleMobile = document.getElementById('themeToggleMobile');
-const menuOverlay = document.getElementById('menuOverlay');
-// const settingsBtn = document.getElementById('settingsBtn'); // Removed
-// const settingsPanel = document.getElementById('settingsPanel'); // Removed
-// const themeToggle = document.getElementById('themeToggle'); // Removed (using themeToggleMobile now)
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const themeToggle = document.getElementById('themeToggle');
 
 // Modals & related elements
 const quizModal = document.getElementById('quizModal');
@@ -170,9 +163,9 @@ function applyTheme(theme) {
     } else {
         document.body.classList.remove('dark');
     }
-    // Update toggle state visually (use the mobile toggle now)
-    if (themeToggleMobile) {
-        themeToggleMobile.checked = (theme === 'dark');
+    // Update toggle state visually
+    if (themeToggle) {
+        themeToggle.checked = (theme === 'dark');
     }
 }
 
@@ -1187,96 +1180,55 @@ function showConfetti() {
 
 
     // Daily
-    checkInBtn?.addEventListener('click', handleCheckIn); // Added optional chaining
-    dailyChallengeBtn?.addEventListener('click', startDailyChallenge); // Added optional chaining
+    checkInBtn.addEventListener('click', handleCheckIn);
+    dailyChallengeBtn.addEventListener('click', startDailyChallenge);
 
-    // Tabs (Main desktop tabs)
-    tabButtons.forEach(button => button?.addEventListener('click', () => switchTab(button.id.replace('Btn', '')))); // Added optional chaining
+    // Tabs
+    tabButtons.forEach(button => button.addEventListener('click', () => switchTab(button.id.replace('Btn', ''))));
 
     // Actions
-     startQuizBtn?.addEventListener('click', startQuiz); // Added optional chaining
-     scenarioBtn?.addEventListener('click', startScenario); // Added optional chaining
-    addJournalEntryBtn?.addEventListener('click', openJournalModal); // Added optional chaining
-    resetProgressBtn?.addEventListener('click', resetGameState); // Added optional chaining
+     startQuizBtn.addEventListener('click', startQuiz);
+     scenarioBtn.addEventListener('click', startScenario);
+    addJournalEntryBtn.addEventListener('click', openJournalModal);
+    resetProgressBtn.addEventListener('click', resetGameState);
 
     // Modals - Close buttons
-    closeQuizBtn?.addEventListener('click', () => closeModal(quizModal)); // Added optional chaining
-    closeJournalBtn?.addEventListener('click', () => closeModal(journalModal)); // Added optional chaining
-    closeScenarioBtn?.addEventListener('click', () => closeModal(scenarioModal)); // Added optional chaining
-    closeLevelUpBtn?.addEventListener('click', () => closeModal(levelUpModal)); // Added optional chaining
-    closeAchievementBtn?.addEventListener('click', () => closeModal(achievementModal)); // Added optional chaining
-    closeQuizCompleteBtn?.addEventListener('click', () => closeModal(quizModal)); // Added optional chaining
-    closeScenarioCompleteBtn?.addEventListener('click', () => closeModal(scenarioModal)); // Added optional chaining
-    closeBiasDetailBtn?.addEventListener('click', () => closeModal(biasDetailModal)); // Added optional chaining
+    closeQuizBtn.addEventListener('click', () => closeModal(quizModal));
+    closeJournalBtn.addEventListener('click', () => closeModal(journalModal));
+    closeScenarioBtn.addEventListener('click', () => closeModal(scenarioModal));
+    closeLevelUpBtn.addEventListener('click', () => closeModal(levelUpModal));
+    closeAchievementBtn.addEventListener('click', () => closeModal(achievementModal));
+    closeQuizCompleteBtn.addEventListener('click', () => closeModal(quizModal));
+    closeScenarioCompleteBtn.addEventListener('click', () => closeModal(scenarioModal));
+    closeBiasDetailBtn.addEventListener('click', () => closeModal(biasDetailModal));
 
-    // --- Burger Menu Logic ---
-    const openMenu = () => {
-        mobileNav?.classList.add('menu-open');
-        menuOverlay?.classList.remove('hidden');
-        menuOverlay?.classList.add('menu-open');
-        burgerBtn?.classList.add('hidden'); // Hide burger icon
-    };
-    const closeMenu = () => {
-        mobileNav?.classList.remove('menu-open');
-        menuOverlay?.classList.remove('menu-open');
-        // Add a slight delay before hiding overlay and showing button to allow transition
-        setTimeout(() => {
-             menuOverlay?.classList.add('hidden');
-             burgerBtn?.classList.remove('hidden'); // Show burger icon after menu is closed
-        }, 300);
-    };
-
-    burgerBtn?.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent triggering document click listener
-        openMenu();
+    // Settings Panel & Theme Toggle
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent click from immediately closing panel if it bubbles up
+        settingsPanel.classList.toggle('hidden');
     });
-    closeNavBtn?.addEventListener('click', closeMenu);
-    menuOverlay?.addEventListener('click', closeMenu);
-
-    // Mobile Nav Links
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default anchor behavior
-
-            const tabId = link.dataset.tab;
-            const targetSelector = link.getAttribute('href'); // Get the href value (e.g., "#main-game-area")
-
-            // 1. Scroll to the target section
-            if (targetSelector && targetSelector.startsWith('#')) {
-                const targetElement = document.querySelector(targetSelector);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-
-            // 2. Switch the tab content within the target section
-            if (tabId) {
-                switchTab(tabId);
-            }
-
-            // 3. Close the menu
-            closeMenu();
-        });
-    });
-
-    // Theme Toggle (Mobile)
-    themeToggleMobile?.addEventListener('change', () => {
-        const newTheme = themeToggleMobile.checked ? 'dark' : 'light';
+    themeToggle.addEventListener('change', () => {
+        const newTheme = themeToggle.checked ? 'dark' : 'light';
         applyTheme(newTheme);
         localStorage.setItem(THEME_KEY, newTheme);
     });
-    // --- End Burger Menu Logic ---
+    // Close settings panel if clicking outside
+    document.addEventListener('click', (e) => {
+        if (!settingsPanel.classList.contains('hidden') && !settingsPanel.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
+            settingsPanel.classList.add('hidden');
+        }
+    });
 
 
     // Modals - Actions
-    submitQuizBtn?.addEventListener('click', submitQuizAnswer); // Added optional chaining
-    nextQuizBtn?.addEventListener('click', nextQuizQuestion); // Added optional chaining
-    endQuizBtn?.addEventListener('click', completeQuiz); // Added optional chaining
-    newQuizBtn?.addEventListener('click', startQuiz); // Added optional chaining
-    saveJournalBtn?.addEventListener('click', addJournalEntry); // Added optional chaining
-    completeScenarioBtn?.addEventListener('click', completeScenario); // Added optional chaining
-    newScenarioBtn?.addEventListener('click', startScenario); // Added optional chaining
-    exploreFromModalBtn?.addEventListener('click', (e) => { // Added optional chaining
+    submitQuizBtn.addEventListener('click', submitQuizAnswer);
+    nextQuizBtn.addEventListener('click', nextQuizQuestion);
+    endQuizBtn.addEventListener('click', completeQuiz);
+    newQuizBtn.addEventListener('click', startQuiz);
+    saveJournalBtn.addEventListener('click', addJournalEntry);
+    completeScenarioBtn.addEventListener('click', completeScenario);
+    newScenarioBtn.addEventListener('click', startScenario);
+    exploreFromModalBtn.addEventListener('click', (e) => {
         const biasNameToExplore = e.currentTarget.dataset.biasName;
         if (biasNameToExplore) {
             exploreBias(biasNameToExplore, null, false);
@@ -1287,13 +1239,13 @@ function showConfetti() {
 
 
     // Modals - Share Placeholders
-    shareQuizResultBtn?.addEventListener('click', () => alert('Sharing not implemented.')); // Added optional chaining
-    shareAchievementBtn?.addEventListener('click', () => alert('Sharing not implemented.')); // Added optional chaining
-    shareLeaderboardBtn?.addEventListener('click', () => alert('Sharing not implemented.')); // Added optional chaining
+    shareQuizResultBtn.addEventListener('click', () => alert('Sharing not implemented.'));
+    shareAchievementBtn.addEventListener('click', () => alert('Sharing not implemented.'));
+    shareLeaderboardBtn.addEventListener('click', () => alert('Sharing not implemented.'));
 
     // Close modal on backdrop click
     [quizModal, journalModal, scenarioModal, levelUpModal, achievementModal, biasDetailModal].forEach(modal => {
-        modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); }); // Added optional chaining
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
     });
 }
 

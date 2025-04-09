@@ -170,11 +170,6 @@ canvas#confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z
       opacity: 0.5;
  }
 
- /* Add scroll margin to prevent fixed elements overlapping section title */
- #main-game-area {
-     scroll-margin-top: 60px; /* Adjust value as needed based on fixed header/icon height */
- }
-
  .blur-text {
     filter: blur(3px); /* Adjust blur amount as needed */
     user-select: none; /* Prevent easy selection */
@@ -184,30 +179,17 @@ canvas#confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z
 }
 /* Ensure the container itself doesn't get blurred if needed */
 
-/* --- Mobile Navigation Menu --- */
-#mobileNav {
-    /* Default state: hidden off-screen */
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
+/* --- Settings Panel --- */
+#settingsPanel {
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
-#mobileNav.menu-open {
-    /* Active state: slide in */
-    transform: translateX(0);
-}
-/* Overlay for when menu is open */
-#menuOverlay {
-    transition: opacity 0.3s ease-in-out;
-}
-#menuOverlay.menu-open {
-    opacity: 1;
-    pointer-events: auto;
-}
-#menuOverlay:not(.menu-open) {
+#settingsPanel.hidden {
     opacity: 0;
+    transform: translateY(-10px);
     pointer-events: none;
 }
 
-/* --- Theme Toggle Switch (Used in Mobile Nav) --- */
+/* --- Theme Toggle Switch --- */
 .theme-toggle-checkbox:checked {
     right: 0;
     border-color: #4F46E5; /* Indigo */
@@ -329,17 +311,9 @@ body.dark .locked-bias button, body.dark .locked-bias .read-more-btn { backgroun
 body.dark .locked-bias .read-more-btn { background-color: transparent !important; }
 body.dark .locked-bias .explore-status span { color: #9ca3af !important; background-color: #374151 !important; } /* Adjust locked status text/bg */
 
-/* Dark Mode for Mobile Nav */
-body.dark #mobileNav { background-color: #1f2937; } /* gray-800 */
-body.dark #mobileNav h3 { color: #f9fafb; } /* gray-50 */
-body.dark #mobileNav .nav-link { color: #d1d5db; } /* gray-300 */
-body.dark #mobileNav .nav-link:hover { background-color: #374151; } /* gray-700 */
-body.dark #mobileNav hr { border-color: #4b5563; } /* gray-600 */
-body.dark #mobileNav label { color: #d1d5db; } /* gray-300 */
-body.dark #mobileNav #closeNavBtn { color: #9ca3af; } /* gray-400 */
-body.dark #mobileNav #closeNavBtn:hover { color: #e5e7eb; } /* gray-200 */
-
-/* Dark Mode Theme Toggle (inside mobile nav) */
+body.dark #settingsPanel { background-color: #374151; border-color: #4b5563; } /* gray-700, gray-600 */
+body.dark #settingsPanel label { color: #d1d5db; } /* gray-300 */
+body.dark #settingsPanel h4 { color: #f9fafb; } /* gray-50 */
 body.dark .theme-toggle-label { background-color: #6b7280; } /* gray-500 */
 body.dark .theme-toggle-checkbox { background-color: #d1d5db; border-color: #6b7280; } /* gray-300, gray-500 */
 body.dark .theme-toggle-checkbox:checked { background-color: #f9fafb; border-color: #a5b4fc; } /* gray-50, indigo-300 */
