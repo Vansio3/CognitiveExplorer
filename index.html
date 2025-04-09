@@ -5,18 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive Bias Explorer: The Game</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/logo.png">
+    <link rel="shortcut icon" href="img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-gray-100 relative min-h-screen"> <!-- Added relative and min-h-screen -->
-    <div id="stickyHeader" class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md z-30 transition-transform duration-300">
+    <div id="stickyHeader"
+        class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md z-30 transition-transform duration-300">
         <div class="container mx-auto px-4 pr-16 py-2">
             <div class="flex justify-between items-center">
                 <div class="flex justify-between items-center">
                     <!-- Left side - Level and Points -->
                     <div class="flex items-center space-x-4">
+                        <img src="img/logo.png" alt="Cognitive Explorer Logo" class="h-6 w-6 mr-4">
                         <div class="flex items-center">
                             <span class="text-gray-700 dark:text-gray-300 mr-2 text-sm font-medium">Level:</span>
                             <div class="level-indicator">
@@ -26,12 +31,13 @@
                         <div class="flex items-center">
                             <span class="text-gray-700 dark:text-gray-300 mr-2 text-sm font-medium">Points:</span>
                             <div class="bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full">
-                                <span id="userPointsSticky" class="font-bold text-indigo-700 dark:text-indigo-300">0</span>
+                                <span id="userPointsSticky"
+                                    class="font-bold text-indigo-700 dark:text-indigo-300">0</span>
                                 <span class="text-indigo-500 dark:text-indigo-400 text-sm ml-1">pts</span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Right side - Progress Bars -->
                     <div class="flex items-center space-x-4 flex-1 max-w-md ml-4">
                         <div class="flex-1">
@@ -42,7 +48,8 @@
                                 </span>
                             </div>
                             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                                <div id="levelProgressBarSticky" class="bg-indigo-600 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                                <div id="levelProgressBarSticky" class="bg-indigo-600 h-1.5 rounded-full progress-bar"
+                                    style="width: 0%"></div>
                             </div>
                         </div>
                         <div class="flex-1">
@@ -53,7 +60,8 @@
                                 </span>
                             </div>
                             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                                <div id="biasesProgressBarSticky" class="bg-green-500 h-1.5 rounded-full progress-bar" style="width: 0%"></div>
+                                <div id="biasesProgressBarSticky" class="bg-green-500 h-1.5 rounded-full progress-bar"
+                                    style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
@@ -64,31 +72,44 @@
     <canvas id="confetti" class="hidden"></canvas> <!-- Canvas for confetti library -->
 
     <!-- Burger Menu Button (Top Right) -->
-    <button id="burgerBtn" class="fixed top-4 right-4 z-50 text-gray-600 hover:text-indigo-600 focus:outline-none" title="Menu">
+    <button id="burgerBtn" class="fixed top-4 right-4 z-50 text-gray-600 hover:text-indigo-600 focus:outline-none"
+        title="Menu">
         <i class="fas fa-bars text-2xl"></i>
     </button>
 
     <!-- Mobile Navigation Menu (Initially Hidden) -->
-    <nav id="mobileNav" class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform translate-x-full transition-transform duration-300 ease-in-out">
+    <nav id="mobileNav"
+        class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform translate-x-full transition-transform duration-300 ease-in-out">
         <div class="p-4">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Menu</h3>
-                <button id="closeNavBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
+                <button id="closeNavBtn"
+                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
             <ul class="space-y-2">
-                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="explore"><i class="fas fa-compass w-6 mr-2 text-center"></i> Explore</a></li>
-                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="challenge"><i class="fas fa-gamepad w-6 mr-2 text-center"></i> Challenges</a></li>
-                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="journal"><i class="fas fa-journal-whills w-6 mr-2 text-center"></i> Journal</a></li>
-                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="leaderboard"><i class="fas fa-trophy w-6 mr-2 text-center"></i> Leaderboard</a></li>
+                <li><a href="#main-game-area"
+                        class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                        data-tab="explore"><i class="fas fa-compass w-6 mr-2 text-center"></i> Explore</a></li>
+                <li><a href="#main-game-area"
+                        class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                        data-tab="challenge"><i class="fas fa-gamepad w-6 mr-2 text-center"></i> Challenges</a></li>
+                <li><a href="#main-game-area"
+                        class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                        data-tab="journal"><i class="fas fa-journal-whills w-6 mr-2 text-center"></i> Journal</a></li>
+                <li><a href="#main-game-area"
+                        class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                        data-tab="leaderboard"><i class="fas fa-trophy w-6 mr-2 text-center"></i> Leaderboard</a></li>
             </ul>
             <hr class="my-4 border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between">
                 <label for="themeToggleMobile" class="text-sm text-gray-600 dark:text-gray-300">Dark Mode</label>
                 <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="themeToggleMobile" id="themeToggleMobile" class="theme-toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                    <label for="themeToggleMobile" class="theme-toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    <input type="checkbox" name="themeToggleMobile" id="themeToggleMobile"
+                        class="theme-toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
+                    <label for="themeToggleMobile"
+                        class="theme-toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                 </div>
             </div>
         </div>
@@ -101,13 +122,16 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div class="mb-4 md:mb-0">
                     <h2 class="text-3xl font-bold text-gray-800 flex items-center">
+                        <img src="img/logo.png" alt="Cognitive Explorer Logo" class="h-10 w-10 mr-3">
+                        <!-- Added logo image -->
                         <span>Cognitive Explorer</span>
                         <span
                             class="ml-3 bg-indigo-600 text-white text-xs rounded-full px-2 py-1 uppercase font-semibold tracking-wide">BETA</span>
                     </h2>
                     <p class="text-gray-600 mt-1">Master cognitive biases through interactive learning</p>
                 </div>
-                <div class="flex flex-row items-center gap-4 w-full md:w-auto"> <!-- Changed flex-col to flex-row and added gap -->
+                <div class="flex flex-row items-center gap-4 w-full md:w-auto">
+                    <!-- Changed flex-col to flex-row and added gap -->
                     <div class="flex items-center">
                         <span class="text-gray-700 mr-2 text-sm font-medium">Level:</span>
                         <div class="level-indicator">
@@ -153,7 +177,7 @@
                 <div class="bg-gradient-to-r from-yellow-500 to-pink-500 rounded-lg p-4 text-white shadow-md">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-bold">Daily Streak</h3>
-                        <div class="flex items-center bg-black bg-opacity-20 px-2 py-1 rounded-full">
+                        <div class="flex items-center bg-black bg-opacity-30 px-2 py-1 rounded-full">
                             <i class="fas fa-fire text-yellow-300 mr-1.5 text-lg"></i>
                             <span id="streakCount" class="text-xl font-bold">0</span>
                         </div>
@@ -577,7 +601,7 @@
         <!-- Footer -->
         <footer class="mt-16 text-center text-gray-500 text-sm pb-8">
             <p>Bias data adapted from various sources including TitleMax infographic.</p>
-            <p class="mt-1">© 2024 Cognitive Bias Explorer. Educational purposes only.</p>
+            <p class="mt-1">© 2025 Cognitive Bias Explorer. Educational purposes only.</p>
             <button id="resetProgressBtn" class="mt-4 text-xs text-red-600 hover:text-red-800 underline">Reset All
                 Progress</button>
         </footer>
@@ -881,7 +905,8 @@
                 <h4 class="text-lg font-semibold text-gray-800 mb-3">Rewards & Unlocks:</h4>
                 <ul class="text-left space-y-1 text-sm text-gray-700">
                     <li class="flex items-center"><i
-                            class="fas fa-unlock text-green-500 mr-2 w-4 text-center"></i><span>New cognitive biases unlocked!</span></li>
+                            class="fas fa-unlock text-green-500 mr-2 w-4 text-center"></i><span>New cognitive biases
+                            unlocked!</span></li>
                     <li class="flex items-center"><i
                             class="fas fa-check text-green-500 mr-2 w-4 text-center"></i><span>Increased point rewards
                             for actions</span></li>
@@ -938,8 +963,9 @@
         <div class="modal-content max-w-2xl">
             <div class="flex justify-between items-center mb-6 pb-4 border-b">
                 <div class="flex items-center">
-                     <h3 id="biasDetailTitle" class="text-2xl font-bold text-gray-800 mr-3">Bias Name</h3>
-                     <span id="biasDetailBadge" class="badge-unknown text-xs font-bold px-2 py-0.5 rounded-full uppercase">CATEGORY</span>
+                    <h3 id="biasDetailTitle" class="text-2xl font-bold text-gray-800 mr-3">Bias Name</h3>
+                    <span id="biasDetailBadge"
+                        class="badge-unknown text-xs font-bold px-2 py-0.5 rounded-full uppercase">CATEGORY</span>
                 </div>
                 <button id="closeBiasDetailBtn" class="text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
             </div>
@@ -952,18 +978,20 @@
                     <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Description</h4>
                     <p id="biasDetailLongDesc" class="text-base text-gray-800 leading-relaxed"></p>
                 </div>
-                 <div class="border-t pt-4">
+                <div class="border-t pt-4">
                     <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Example</h4>
                     <p id="biasDetailExample" class="text-base text-gray-700 italic bg-gray-50 p-3 rounded border"></p>
                 </div>
             </div>
             <div class="flex justify-end mt-6 pt-4 border-t">
-                 <button id="exploreFromModalBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-5 rounded-lg transition duration-200 text-sm hidden">
-                     <i class="fas fa-check mr-2"></i> Mark as Explored
-                 </button>
-                 <span id="exploredInModalText" class="inline-flex items-center bg-green-100 text-green-700 font-medium py-2 px-5 rounded-lg text-sm hidden">
-                     <i class="fas fa-check-circle mr-2"></i> Explored
-                 </span>
+                <button id="exploreFromModalBtn"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-5 rounded-lg transition duration-200 text-sm hidden">
+                    <i class="fas fa-check mr-2"></i> Mark as Explored
+                </button>
+                <span id="exploredInModalText"
+                    class="inline-flex items-center bg-green-100 text-green-700 font-medium py-2 px-5 rounded-lg text-sm hidden">
+                    <i class="fas fa-check-circle mr-2"></i> Explored
+                </span>
             </div>
         </div>
     </div>

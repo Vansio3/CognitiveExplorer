@@ -2,7 +2,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
     color: #333;
-    padding-top: 10px; /* Adjust based on header height */
+    padding-top: 15px; /* Adjust based on header height */
     /* Ensure no text selection on the body */
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10+ */
@@ -30,7 +30,7 @@ input, textarea {
 /* Sticky Header Container Adjustments */
 #stickyHeader .container {
     position: relative;
-    max-width: calc(100% - 4rem); /* Leave space for burger menu */
+    max-width: calc(100% - 0rem); /* Leave space for burger menu */
 }
 
 /* Ensure progress bars stay within bounds */
@@ -41,13 +41,13 @@ input, textarea {
 /* Responsive header adjustments */
 @media (max-width: 768px) {
     /* Hide only the points container on mobile */
-    #stickyHeader .flex.items-center.space-x-4 > div:nth-child(2) {
+    #stickyHeader .flex.items-center.space-x-4 > div:nth-child(3) {
         display: none;
     }
 
     /* Keep spacing for remaining elements */
     #stickyHeader .flex.items-center.space-x-4 {
-        gap: 0.5rem;
+        gap: 0.1rem;
     }
 
     /* Allow progress bars to use available space */
