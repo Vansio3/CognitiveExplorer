@@ -2,7 +2,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
     color: #333;
-    padding-top: 60px; /* Adjust based on header height */
+    padding-top: 10px; /* Adjust based on header height */
 }
 
 /* Sticky Header Styles */
