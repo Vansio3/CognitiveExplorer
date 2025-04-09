@@ -10,12 +10,44 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 relative min-h-screen"> <!-- Added relative and min-h-screen -->
     <canvas id="confetti" class="hidden"></canvas> <!-- Canvas for confetti library -->
 
+    <!-- Burger Menu Button (Top Right) -->
+    <button id="burgerBtn" class="fixed top-4 right-4 z-50 text-gray-600 hover:text-indigo-600 focus:outline-none" title="Menu">
+        <i class="fas fa-bars text-2xl"></i>
+    </button>
+
+    <!-- Mobile Navigation Menu (Initially Hidden) -->
+    <nav id="mobileNav" class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-40 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Menu</h3>
+                <button id="closeNavBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <ul class="space-y-2">
+                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="explore"><i class="fas fa-compass w-6 mr-2 text-center"></i> Explore</a></li>
+                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="challenge"><i class="fas fa-gamepad w-6 mr-2 text-center"></i> Challenges</a></li>
+                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="journal"><i class="fas fa-journal-whills w-6 mr-2 text-center"></i> Journal</a></li>
+                <li><a href="#main-game-area" class="nav-link block py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200" data-tab="leaderboard"><i class="fas fa-trophy w-6 mr-2 text-center"></i> Leaderboard</a></li>
+            </ul>
+            <hr class="my-4 border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between">
+                <label for="themeToggleMobile" class="text-sm text-gray-600 dark:text-gray-300">Dark Mode</label>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="themeToggleMobile" id="themeToggleMobile" class="theme-toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                    <label for="themeToggleMobile" class="theme-toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
     <div class="container mx-auto px-4 py-8">
         <!-- Game Dashboard -->
-        <div class="bg-white rounded-lg shadow-lg mb-8 p-6">
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg mb-8 p-6"> <!-- Added dark mode class -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div class="mb-4 md:mb-0">
                     <h2 class="text-3xl font-bold text-gray-800 flex items-center">
@@ -39,10 +71,7 @@
                             <span class="text-indigo-500 text-sm ml-1">pts</span>
                         </div>
                     </div>
-                    <!-- Settings Button -->
-                    <button id="settingsBtn" class="mt-2 md:mt-0 md:ml-4 text-gray-500 hover:text-indigo-600 focus:outline-none" title="Settings">
-                        <i class="fas fa-cog text-xl"></i>
-                    </button>
+                    <!-- Settings Button (Removed, replaced by burger menu) -->
                 </div>
             </div>
 
@@ -187,7 +216,7 @@
         </div>
 
         <!-- Game Controls & Content Area -->
-        <div class="bg-white rounded-lg shadow-lg mb-8 p-6">
+        <div id="main-game-area" class="bg-white rounded-lg shadow-lg mb-8 p-6">
             <!-- Tabs -->
             <div class="flex flex-wrap gap-x-4 gap-y-2 mb-6 border-b border-gray-200 pb-3">
                 <button id="exploreBtn" class="tab-button py-2 px-3 text-base font-medium flex items-center">
@@ -506,18 +535,7 @@
 
     </div> <!-- End Container -->
 
-    <!-- Settings Panel -->
-    <div id="settingsPanel" class="hidden absolute top-16 right-4 bg-white rounded-lg shadow-xl p-4 border border-gray-200 w-60 z-40">
-        <h4 class="text-sm font-semibold text-gray-700 mb-3">Settings</h4>
-        <div class="flex items-center justify-between">
-            <label for="themeToggle" class="text-sm text-gray-600">Dark Mode</label>
-            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input type="checkbox" name="themeToggle" id="themeToggle" class="theme-toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                <label for="themeToggle" class="theme-toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-            </div>
-        </div>
-        <!-- Add other settings here if needed -->
-    </div>
+    <!-- Settings Panel (Removed, functionality moved to mobileNav) -->
 
     <!-- MODALS -->
 
@@ -906,6 +924,9 @@
     <script src="quizScenarios.js"></script>
     <!-- Load Main Logic Script Last -->
     <script src="script.js"></script>
+
+    <!-- Overlay for when menu is open -->
+    <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
 </body>
 
