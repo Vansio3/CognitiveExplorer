@@ -3,6 +3,17 @@ body {
     background-color: #f5f7fa;
     color: #333;
     padding-top: 10px; /* Adjust based on header height */
+    /* Ensure no text selection on the body */
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard syntax */
+}
+
+/* Ensure text selection on input, textarea */
+input, textarea {
+    -webkit-user-select: text; /* Safari */
+    -ms-user-select: text; /* IE 10+ */
+    user-select: text; /* Standard syntax */
 }
 
 /* Sticky Header Styles */
